@@ -1,0 +1,26 @@
+{
+  "slug": "mountkelvin_lights",
+  "name": "Mountkelvin lights",
+  "version": "1.0.0",
+  "url": "https://github.com/timoly/mountkelvin-hass-api-bridge",
+  "stage": "stable",
+  "description": "",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "startup": "services",
+  "boot": "auto",
+  "ports": {
+    "4003/tcp": 4003
+  },
+  "ports_description": {
+    "4003/tcp": "rest API"
+  },
+  "map": [],
+  "options": {
+  	"ha_token": "create hass key",
+    "mountkelvin_key": "your mountkelvin site key"
+  },
+  "schema": {
+    "ha_key": "str",
+    "mountkelvin_key": "str"
+  }
+}

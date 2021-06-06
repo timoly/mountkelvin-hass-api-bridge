@@ -18,5 +18,5 @@
     "compile": "tsc api-bridge.ts"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
