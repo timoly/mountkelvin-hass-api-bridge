@@ -1,7 +1,7 @@
 {
   "slug": "mountkelvin_lights",
   "name": "Mountkelvin lights",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "url": "https://github.com/timoly/mountkelvin-hass-api-bridge",
   "stage": "stable",
   "description": "",
@@ -16,7 +16,7 @@
   },
   "map": [],
   "options": {
-  	"ha_token": "create hass key",
+  	"ha_key": "create hass key",
     "mountkelvin_key": "your mountkelvin site key"
   },
   "schema": {

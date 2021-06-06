@@ -13,6 +13,7 @@ const get = util.promisify(request.get)
 
 const HA_KEY = process.env.HA_KEY
 const SITEKEY = process.env.MOUNTKELVIN_KEY
+console.log(`HA_KEY: '${HA_KEY}', SITEKEY: '${SITEKEY}'`)
 if(!HA_KEY){
   console.error("missing HA_KEY")
   process.exit(1)
