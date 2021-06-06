@@ -11,7 +11,7 @@ console.log("starting....")
 const post = util.promisify(request.post)
 const get = util.promisify(request.get)
 
-const HA_KEY = process.env.HA_KEY
+const HA_KEY = process.env.SUPERVISOR_TOKEN
 const SITEKEY = process.env.MOUNTKELVIN_KEY
 console.log(`HA_KEY: '${HA_KEY}', SITEKEY: '${SITEKEY}'`)
 if(!HA_KEY){
