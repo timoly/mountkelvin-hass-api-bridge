@@ -38,7 +38,7 @@ const headers = {'Authorization': `Bearer ${HA_KEY}`, 'Content-Type': 'applicati
 
 const getState = async id => {
   const response = await get({
-    url: `https://localhost:8123/api/states/${id}`,
+    url: `http://supervisor/core/api/states/${id}`,
     headers,
     json: true,
     rejectUnauthorized: false,
@@ -50,7 +50,7 @@ const getState = async id => {
 
 const setState = async (id, state) => {
   return post({
-    url: `https://localhost:8123/api/states/${id}`,
+    url: `http://supervisor/core/api/states/${id}`,
     headers,
     json: true,
     body: state,
