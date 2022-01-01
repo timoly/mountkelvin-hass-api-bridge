@@ -4,6 +4,7 @@ const request = require('request')
 const R = require("ramda")
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 require('log-timestamp')
 console.log("starting....")
@@ -13,6 +14,7 @@ const get = util.promisify(request.get)
 
 const HA_KEY = process.env.SUPERVISOR_TOKEN
 const SITEKEY = process.env.MOUNTKELVIN_KEY
+const MOUNTKELVIN_BRIDGE_KEY = process.env.MOUNTKELVIN_BRIDGE_KEY
 console.log(`HA_KEY: '${HA_KEY}', SITEKEY: '${SITEKEY}'`)
 if(!HA_KEY){
   console.error("missing HA_KEY")
@@ -23,6 +25,17 @@ if(!SITEKEY){
   process.exit(1)
 }
 
+
+const commonRequestParams = {
+  headers: {'Authorization': `Bearer ${HA_KEY}`, 'Content-Type': 'application/json'},
+  json: true,
+  rejectUnauthorized: false,
+  requestCert: true,
+  agent: false
+}
+
+const port = 4003
+
 let siteDevices = []
 
 app.get('/', (_req, res) => {
@@ -31,19 +44,60 @@ app.get('/', (_req, res) => {
 app.get('/:id', (req, res) => {
   res.send(siteDevices.find(d => d.id === req.params.id))
 })
-const port = 4003
-app.listen(port, () => console.log(`app listening on port ${port}!`))
 
-const headers = {'Authorization': `Bearer ${HA_KEY}`, 'Content-Type': 'application/json'}
+app.post('/houmio/:id', async (req, res) => {
+  try{
+    const key = req.query.key
+    if(key !== MOUNTKELVIN_BRIDGE_KEY){
+      console.log(`invalid key ${key}, expected ${MOUNTKELVIN_BRIDGE_KEY}`)
+      return res.status(401).send()
+    }
+
+    // { command:"set", state: { on:false, bri:122 } }
+    const payload = req.body
+    const id = req.params.id
+
+    if(!(payload && payload.state && typeof payload.state.on === "boolean" && id)){
+      console.log("incoming data is invalid:", payload, id)
+      return res.status(400).send()
+    }
+
+    const status = await new Promise((resolve) => {
+      const action = payload.state.on ? "turn_on" : "turn_off"
+      const body = {
+        entity_id: id,
+        ...payload.state.on && !id.includes("switch") ? {brightness: payload.state.bri} : {}
+      }
+      console.log(id, action, body, payload)
+      
+      post({
+        url: `http://supervisor/core/api/services/homeassistant/${action}`,
+        ...commonRequestParams,
+        body,
+      }, (err, httpResponse, hassBody) => {
+        console.log('hass response:', err, httpResponse?.statusCode)
+        if (err || !httpResponse || httpResponse.statusCode !== 200) {
+          console.error(hassBody)
+          return resolve(500)
+        }
+        return resolve(200)
+      })
+    })
+
+    return res.status(status).send()
+  }
+  catch(err){
+    console.error("error:", err, err.stack)
+    return res.status(500).send()
+  }
+})
+
+app.listen(port, () => console.log(`app listening on port ${port}!`))
 
 const getState = async id => {
   const response = await get({
     url: `http://supervisor/core/api/states/${id}`,
-    headers,
-    json: true,
-    rejectUnauthorized: false,
-    requestCert: true,
-    agent: false
+    ...commonRequestParams
   })
   return response.body
 }
@@ -51,12 +105,8 @@ const getState = async id => {
 const setState = async (id, state) => {
   return post({
     url: `http://supervisor/core/api/states/${id}`,
-    headers,
-    json: true,
+    ...commonRequestParams,
     body: state,
-    rejectUnauthorized: false,
-    requestCert: true,
-    agent: false
   })
 }
 
@@ -90,7 +140,8 @@ const onSite = ({ data }) => {
       const hasBrightness = state.attributes && (state.attributes.brightness && d.type === "dimmable" || state.attributes.supported_features === 33)
       const attributes = hasBrightness ? {...state.attributes, brightness: d.state.bri} : state.attributes
       const body = {...state, state: d.state.on === true ? "on" : "off", attributes}
-      console.log("change", hassId, body, hasBrightness, "houmio data:", d)
+      // console.log("change", hassId, body, hasBrightness, "houmio data:", d)
+      console.log("change", hassId)
       return setState(hassId, body)
     }).catch(err => {
       console.error(err)

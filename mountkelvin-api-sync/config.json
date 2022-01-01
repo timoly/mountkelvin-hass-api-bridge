@@ -1,7 +1,7 @@
 {
   "slug": "mountkelvin_lights",
   "name": "Mountkelvin lights",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "url": "https://github.com/timoly/mountkelvin-hass-api-bridge",
   "stage": "stable",
   "description": "",
@@ -17,9 +17,11 @@
   "map": [],
   "homeassistant_api": true,
   "options": {
-    "mountkelvin_key": "your mountkelvin site key"
+    "mountkelvin_key": "your mountkelvin site key",
+    "mountkelvin_bridge_key": "your mountkelvin bridge key"
   },
   "schema": {
-    "mountkelvin_key": "str"
+    "mountkelvin_key": "str",
+    "mountkelvin_bridge_key": "str"
   }
 }
