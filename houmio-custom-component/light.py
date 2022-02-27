@@ -17,7 +17,7 @@ import math
 import os
 
 from homeassistant.components.light import (ATTR_BRIGHTNESS, ATTR_TRANSITION,
-    Light, SUPPORT_BRIGHTNESS, SUPPORT_FLASH, SUPPORT_TRANSITION)
+    LightEntity, SUPPORT_BRIGHTNESS, SUPPORT_FLASH, SUPPORT_TRANSITION)
 
 DOMAIN = 'light_houmio_v3'
 LIGHT_BINARY = (SUPPORT_FLASH)
@@ -29,7 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 HOUMIO_URL = 'https://houmkolmonen.herokuapp.com/api/site'
 API_GW_URL = 'http://localhost:4003'
 
-class HoumioLight(Light):
+class HoumioLight(LightEntity):
     """Representation of an Houmio Light."""
 
     def __init__(self, light, siteKey):
