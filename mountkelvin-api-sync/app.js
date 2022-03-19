@@ -76,8 +76,8 @@ app.post('/houmio/:id', async (req, res) => {
         body,
       }, (err, httpResponse, hassBody) => {
         console.log('hass response:', err, httpResponse?.statusCode)
-        if (err || !httpResponse || httpResponse.statusCode !== 200) {
-          console.error(hassBody)
+        if (err || !httpResponse || httpResponse.statusCode !== 200) {
+          console.error("error body: ", hassBody)
           return resolve(500)
         }
         return resolve(200)
@@ -144,7 +144,7 @@ const onSite = ({ data }) => {
       console.log("change", hassId)
       return setState(hassId, body)
     }).catch(err => {
-      console.error(err)
+      console.error("setState error:", err)
     })
   })
 }

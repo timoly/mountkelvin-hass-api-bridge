@@ -147,7 +147,7 @@ class HoumioLight(LightEntity):
 async def fetch(hass, url, method='get'):
     session = async_get_clientsession(hass)
     try:
-        with async_timeout.timeout(30, loop=hass.loop):
+        with async_timeout.timeout(30):
             resp = await session.get(url)
             return (await resp.json()) if resp.status == 200 else (await resp.release())
     except (asyncio.TimeoutError, aiohttp.ClientError):
