@@ -1,3 +1,4 @@
+// https://gist.github.com/lagondo/cc94d342f996a802144262df2402e768
 const io = require('socket.io-client')
 const util = require('util');
 const request = require('request')
