@@ -10,7 +10,6 @@ import async_timeout
 
 from urllib3.exceptions import HTTPError
 
-import asyncio
 import aiohttp
 from functools import partial
 import math
@@ -139,8 +138,8 @@ class HoumioLight(LightEntity):
         if bri >= 255:
             self._transitionInterval.cancel()
 
-    @asyncio.coroutine
-    def async_update(self):
+
+    async def async_update(self):
         url = "{0}/{1}".format(API_GW_URL, self._light['houmio_id'])
         _LOGGER.info("houmio async_update: {0} {1}".format(self._light, url))
 
@@ -150,7 +149,7 @@ async def fetch(hass, url, method='get'):
         with async_timeout.timeout(30):
             resp = await session.get(url)
             return (await resp.json()) if resp.status == 200 else (await resp.release())
-    except (asyncio.TimeoutError, aiohttp.ClientError):
+    except Exception as error:  # pylint: disable=broad-except
         _LOGGER.error("Timeout for houmio fetch.")
         return None
 
